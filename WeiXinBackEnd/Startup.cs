@@ -46,10 +46,14 @@ namespace WeiXinBackEnd
                         .AllowCredentials()
                 ));
 
+
+            #region DI
             services.AddSingleton(new TokenManager(Configuration["App:AppId"], Configuration["App:AppSecret"]));
             services.AddHostedService<TokenAccessHostedService>();
 
             services.AddTransient<IImgSecApp, ImgSecApp>();
+            #endregion
+
 
             services.AddSwaggerDocument(document =>
             {

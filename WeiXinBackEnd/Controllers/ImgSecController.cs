@@ -25,13 +25,6 @@ namespace WeiXinBackEnd.Controllers
         }
 
 
-        //// POST api/<controller>
-        //[HttpPost]
-        //public async Task<ImgSecAuthResponse> Post([FromBody]ImgSecAuthInput input)
-        //{
-        //    return await _imgSec.AuthAsync(input);
-        //}
-
         // POST api/<controller>
 
         /// <summary>

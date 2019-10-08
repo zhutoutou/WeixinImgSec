@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeiXinBackEnd", "WeiXinBack
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeiXinBackEnd.Application", "WeiXinBackEnd.Application\WeiXinBackEnd.Application.csproj", "{AAEB79BC-6751-4FDA-B5BE-EC2ADE208FAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiXinBackEnd.Core", "WeiXinBackEnd.Core\WeiXinBackEnd.Core.csproj", "{FBBE18E4-F0D6-459F-A3B9-51FAF0A073CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeiXinBackEnd.Core", "WeiXinBackEnd.Core\WeiXinBackEnd.Core.csproj", "{FBBE18E4-F0D6-459F-A3B9-51FAF0A073CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiXinBackEnd.SDK", "WeiXinBackEnd.SDK\WeiXinBackEnd.SDK.csproj", "{9626EEF0-8513-4E41-88D6-0A3ACA83C691}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{FBBE18E4-F0D6-459F-A3B9-51FAF0A073CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBBE18E4-F0D6-459F-A3B9-51FAF0A073CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBBE18E4-F0D6-459F-A3B9-51FAF0A073CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9626EEF0-8513-4E41-88D6-0A3ACA83C691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9626EEF0-8513-4E41-88D6-0A3ACA83C691}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9626EEF0-8513-4E41-88D6-0A3ACA83C691}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9626EEF0-8513-4E41-88D6-0A3ACA83C691}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
