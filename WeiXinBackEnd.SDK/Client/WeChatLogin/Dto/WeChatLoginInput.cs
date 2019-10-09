@@ -1,4 +1,4 @@
-﻿namespace WeiXinBackEnd.SDK.Default.WeChatLogin.Dto
+﻿namespace WeiXinBackEnd.SDK.Client.WeChatLogin.Dto
 {
     /// <summary>
     /// WeChat
