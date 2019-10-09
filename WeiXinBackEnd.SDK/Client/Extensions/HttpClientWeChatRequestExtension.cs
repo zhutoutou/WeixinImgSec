@@ -12,14 +12,14 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         public static async Task<WeChatLoginResponse> RequestLoginAsync(this HttpMessageInvoker client,
             WeChatLoginRequest request, CancellationToken cancellationToken = default)
         {
-
+            return await client.RequestLoginAsync(request,cancellationToken);
         }
 
 
-        internal static async Task<WeChatLoginResponse> RequestTokenAsync(this HttpMessageInvoker client, WeChatRequest request, CancellationToken cancellationToken = default)
+        internal static async Task<WeChatLoginResponse> RequestLoginAsync(this HttpMessageInvoker client, WeChatRequest request, CancellationToken cancellationToken = default)
         {
             request.Prepare();
-            request.Method = HttpMethod.Post;
+            request.Method = HttpMethod.Get;
 
             HttpResponseMessage response;
             try
@@ -28,10 +28,10 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
             }
             catch (Exception ex)
             {
-                return ProtocolResponse.FromException<TokenResponse>(ex);
+                return ProtocolResponse.FromException<WeChatResponse>(ex);
             }
 
-            return await ProtocolResponse.FromHttpResponseAsync<TokenResponse>(response).ConfigureAwait();
+            return await ProtocolResponse.FromHttpResponseAsync<WeChatResponse>(response).ConfigureAwait();
         }
     }
 }

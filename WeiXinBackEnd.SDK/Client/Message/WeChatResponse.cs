@@ -1,6 +1,6 @@
 ﻿namespace WeiXinBackEnd.SDK.Client.Message
 {
-    public class WeChatResponse
+    public class WeChatResponse:ProtocolResponse
     {
         /// <summary>
         /// 错误码
