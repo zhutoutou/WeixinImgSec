@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using WeiXinBackEnd.SDK.Client.Extensions;
 
 namespace WeiXinBackEnd.SDK.Client.Message
@@ -10,7 +10,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
     /// <summary>
     /// A protocol response
     /// </summary>
-    public class ProtocolResponse
+    public class ProtocolResponse<TV> where TV : WeChatResponse
     {
         /// <summary>
         /// Initializes a protocol response from an HTTP response
@@ -19,7 +19,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
         /// <param name="httpResponse">The HTTP response.</param>
         /// <param name="initializationData">The initialization data.</param>
         /// <returns></returns>
-        public static async Task<T> FromHttpResponseAsync<T>(HttpResponseMessage httpResponse, object initializationData = null) where T : ProtocolResponse, new()
+        public static async Task<T> FromHttpResponseAsync<T>(HttpResponseMessage httpResponse, object initializationData = null) where T : ProtocolResponse<TV>, new()
         {
             var response = new T
             {
@@ -33,7 +33,10 @@ namespace WeiXinBackEnd.SDK.Client.Message
                 content = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 response.Raw = content;
             }
-            catch { }
+            catch
+            {
+                // Todo 忽略
+            }
 
             // some HTTP error - try to parse body as JSON but allow non-JSON as well
             if (httpResponse.IsSuccessStatusCode == false &&
@@ -45,9 +48,12 @@ namespace WeiXinBackEnd.SDK.Client.Message
                 {
                     try
                     {
-                        response.Json = JObject.Parse(content);
+                        response.Result = JsonConvert.DeserializeObject<TV>(content);
                     }
-                    catch { }
+                    catch
+                    {
+                        // Todo 忽略
+                    }
                 }
 
                 await response.InitializeAsync(initializationData).ConfigureAwait(false);
@@ -64,7 +70,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
             {
                 if (content.IsPresent())
                 {
-                    response.Json = JObject.Parse(content);
+                    response.Result = JsonConvert.DeserializeObject<TV>(content);
                 }
             }
             catch (Exception ex)
@@ -82,19 +88,21 @@ namespace WeiXinBackEnd.SDK.Client.Message
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ex">The ex.</param>
+        /// <param name="errorType"></param>
         /// <param name="errorMessage">The error message.</param>
         /// <returns></returns>
-        public static T FromException<T>(Exception ex, string errorMessage = null) where T : ProtocolResponse, new()
+        public static T FromException<T>(Exception ex, ResponseErrorType errorType , string errorMessage = null) where T : ProtocolResponse<TV>, new()
         {
             var response = new T
             {
                 Exception = ex,
-                ErrorType = ResponseErrorType.Exception,
+                ErrorType = errorType,
                 ErrorMessage = errorMessage
             };
 
             return response;
         }
+
 
         /// <summary>
         /// Allows to initialize instance specific data.
@@ -128,7 +136,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
         /// <value>
         /// The json.
         /// </value>
-        public JObject Json { get; protected set; }
+        public TV Result { get; protected set; }
 
         /// <summary>
         /// Gets the exception (if present).
@@ -179,6 +187,10 @@ namespace WeiXinBackEnd.SDK.Client.Message
         public string HttpErrorReason => HttpResponse.ReasonPhrase;
 
         /// <summary>
+        /// 微信放回内容
+        /// </summary>
+
+        /// <summary>
         /// Gets the error.
         /// </summary>
         /// <value>
@@ -196,33 +208,24 @@ namespace WeiXinBackEnd.SDK.Client.Message
                 {
                     return HttpErrorReason;
                 }
-                if (ErrorType == ResponseErrorType.Exception)
+                if (ErrorType == ResponseErrorType.Exception || ErrorType== ResponseErrorType.Prepare)
                 {
                     return Exception.Message;
                 }
 
-                return TryGet(WeChatConstants.WeChatResponse.Error);
+                return Result.ErrMsg;
             }
         }
 
-        public int ErrorCode
+        public int? ErrorCode
         {
             get
             {
                 if (ErrorType == ResponseErrorType.None)
-                    return Json.TryGetInt(WeChatConstants.WeChatResponse.ErrorCode) ?? -1;
-                else
-                {
-                    return -1;
-                }
+                    return Result.ErrCode;
+                return null;
             }
         }
 
-        /// <summary>
-        /// Tries to get a specific value from the JSON response.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        public string TryGet(string name) => Json.TryGetString(name);
     }
 }

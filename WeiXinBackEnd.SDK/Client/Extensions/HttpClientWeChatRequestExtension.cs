@@ -3,23 +3,37 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using WeiXinBackEnd.SDK.Client.Message;
-using WeiXinBackEnd.SDK.Client.WeChatLogin.Dto;
+using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {
     public static class HttpClientWeChatRequestExtension
     {
+        /// <summary>
+        /// 微信登陆
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<WeChatLoginResponse> RequestLoginAsync(this HttpMessageInvoker client,
             WeChatLoginRequest request, CancellationToken cancellationToken = default)
         {
-            return await client.RequestLoginAsync(request,cancellationToken);
+            return await client.RequestLoginAsync(request, cancellationToken);
         }
 
 
-        internal static async Task<WeChatLoginResponse> RequestLoginAsync(this HttpMessageInvoker client, WeChatRequest request, CancellationToken cancellationToken = default)
+        internal static async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(this HttpMessageInvoker client, WeChatRequest request, CancellationToken cancellationToken = default)
         {
-            request.Prepare();
-            request.Method = HttpMethod.Get;
+            try
+            {
+                request.Prepare(HttpMethod.Get);
+            }
+            catch (Exception ex)
+            {
+                return ProtocolResponse<WeChatLoginResponse>.FromException<ProtocolResponse<WeChatLoginResponse>>(ex, ResponseErrorType.Prepare);
+            }
+       
 
             HttpResponseMessage response;
             try
@@ -28,10 +42,10 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
             }
             catch (Exception ex)
             {
-                return ProtocolResponse.FromException<WeChatResponse>(ex);
+                return ProtocolResponse<WeChatLoginResponse>.FromException<ProtocolResponse<WeChatLoginResponse>>(ex, ResponseErrorType.Exception);
             }
 
-            return await ProtocolResponse.FromHttpResponseAsync<WeChatResponse>(response).ConfigureAwait();
+            return await ProtocolResponse<WeChatLoginResponse>.FromHttpResponseAsync<ProtocolResponse<WeChatLoginResponse>>(response).ConfigureAwait(false);
         }
     }
 }

@@ -1,97 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using WeiXinBackEnd.SDK.Client.Extensions;
 
 namespace WeiXinBackEnd.SDK.Client.Message
 {
-    public class WeChatRequest:HttpRequestMessage
+    public class WeChatRequest : ProtocolRequest
     {
-
-        /// <summary>
-        /// Gets or sets the endpoint address (you can also set the RequestUri instead or leave blank to use the HttpClient base address).
-        /// </summary>
-        /// <value>
-        /// The address.
-        /// </value>
-        public string Address { get; set; }
-
         /// <summary>
         /// AppId
         /// </summary>
+        [Required]
+        [WeChatParameterName("appid")]
         public string AppId { get; set; }
 
         /// <summary>
         /// AppSecret
         /// </summary>
+        [Required]
+        [WeChatParameterName("secret")]
         public string AppSecret { get; set; }
 
         /// <summary>
-        /// Gets or sets additional protocol parameters.
+        /// 获取业务参数
         /// </summary>
-        /// <value>
-        /// The parameters.
-        /// </value>
-        public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        public WeChatRequest Clone()
+        /// <returns></returns>
+        public virtual void ConstructParam()
         {
-            return Clone<WeChatRequest>();
+            var propertyInfos = GetType().GetProperties().Where(v => v.GetCustomAttributes().OfType<WeChatParameterNameAttribute>().Any()).ToList();
+            propertyInfos.ForEach(v =>
+            {
+                var key = v.GetCustomAttribute<WeChatParameterNameAttribute>().WeChatParameterName;
+                if (!Parameters.ContainsKey(key))
+                    Parameters.Add(key, v.GetValue(this).ToString());
+            });
         }
 
         /// <summary>
-        /// Clones this instance.
+        /// 检查参数的合法性
         /// </summary>
-        public T Clone<T>()
-            where T : WeChatRequest, new()
+        protected virtual void CheckValidation()
         {
-            var clone = new T
+            GetType().GetProperties().ToList().ForEach(prop =>
             {
-                RequestUri = RequestUri,
-                Version = Version,
-                Method = Method,
-                Address = Address,
-                AppId = AppId,
-                AppSecret = AppSecret,
-                Parameters = new Dictionary<string, string>(),
-            };
+                prop.GetCustomAttributes<ValidationAttribute>(true).ToList().ForEach(valid => valid.Validate(prop.GetValue(this), prop.Name));
+            });
+        }
 
-            if (Parameters != null)
+        public override void Prepare()
+        {
+            // 验证参数
+            CheckValidation();
+            // 构建参数
+            ConstructParam();
+
+            if (Method == HttpMethod.Get)
             {
-                foreach (var item in Parameters) clone.Parameters.Add(item);
+                var queryString = ToQueryString(Parameters);
+                RequestUri = new Uri($"{Address}?{queryString}");
             }
-
-            clone.Headers.Clear();
-            foreach (var header in Headers)
+            else if (Method == HttpMethod.Post)
             {
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
-
-            if (Properties != null && Properties.Any())
-            {
-                foreach (var property in Properties)
+                if (Address.IsPresent())
                 {
-                    clone.Properties.Add(property);
+                    RequestUri = new Uri(Address);
                 }
-            }
 
-            return clone;
-        }
-
-        public virtual void Prepare()
-        {
-            if (Address.IsPresent())
-            {
-                RequestUri = new Uri(Address);
-            }
-
-            if (Parameters.Any())
-            {
-                Content = new FormUrlEncodedContent(Parameters);
+                if (Parameters.Any())
+                {
+                    Content = new FormUrlEncodedContent(Parameters);
+                }
             }
         }
     }

@@ -8,6 +8,11 @@ namespace WeiXinBackEnd.SDK.Client.Message
         None,
 
         /// <summary>
+        /// validate request - require parameter is null or out of range of the string
+        /// </summary>
+        Prepare,
+
+        /// <summary>
         /// protocol related - valid response, but some protocol level error.
         /// </summary>
         Protocol,

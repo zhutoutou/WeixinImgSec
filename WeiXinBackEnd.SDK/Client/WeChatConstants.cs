@@ -1,9 +1,18 @@
-public static class WeChatConstants
+namespace WeiXinBackEnd.SDK.Client
 {
-
-    public static class WeChatResponse
+    public static class WeChatConstants
     {
-        public const string Error = "errmsg";
-        public const string ErrorCode = "errcode";
+
+        public static class WeChatResponse
+        {
+            public const string Error = "errmsg";
+            public const string ErrorCode = "errcode";
+        }
+
+        public static class WeChatLoginRequest
+        {
+            public const string LoginGrantType = "authorization_code";
+        }
+
     }
 }
