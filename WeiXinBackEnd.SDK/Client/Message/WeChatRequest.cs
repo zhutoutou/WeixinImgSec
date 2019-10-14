@@ -11,20 +11,6 @@ namespace WeiXinBackEnd.SDK.Client.Message
     public class WeChatRequest : ProtocolRequest
     {
         /// <summary>
-        /// AppId
-        /// </summary>
-        [Required]
-        [WeChatParameterName("appid")]
-        public string AppId { get; set; }
-
-        /// <summary>
-        /// AppSecret
-        /// </summary>
-        [Required]
-        [WeChatParameterName("secret")]
-        public string AppSecret { get; set; }
-
-        /// <summary>
         /// 获取业务参数
         /// </summary>
         /// <returns></returns>
@@ -50,6 +36,10 @@ namespace WeiXinBackEnd.SDK.Client.Message
             });
         }
 
+
+        /// <summary>
+        /// 准备
+        /// </summary>
         public override void Prepare()
         {
             // 验证参数
@@ -75,5 +65,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
                 }
             }
         }
+
+ 
     }
 }

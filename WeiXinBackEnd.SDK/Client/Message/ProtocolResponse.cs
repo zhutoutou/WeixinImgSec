@@ -213,7 +213,12 @@ namespace WeiXinBackEnd.SDK.Client.Message
                     return Exception.Message;
                 }
 
-                return Result.ErrMsg;
+                if (ErrorCode != 0)
+                {
+                    return $"´íÎóÂë{ErrorCode},´íÎóÄÚÈİ{Result.ErrMsg}";
+                }
+
+                return null;
             }
         }
 

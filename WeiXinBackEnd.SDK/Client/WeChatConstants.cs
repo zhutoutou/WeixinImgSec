@@ -1,18 +1,12 @@
 namespace WeiXinBackEnd.SDK.Client
 {
-    public static class WeChatConstants
+    /// <summary>
+    /// 微信登陆Constants
+    /// </summary>
+    public static class WeChatLoginConstants
     {
-
-        public static class WeChatResponse
-        {
-            public const string Error = "errmsg";
-            public const string ErrorCode = "errcode";
-        }
-
-        public static class WeChatLoginRequest
-        {
-            public const string LoginGrantType = "authorization_code";
-        }
-
+        public const string LoginGrantType = "authorization_code";
+        public const string SuccessLog = "RequestLoginAsync请求成功";
     }
+
 }
