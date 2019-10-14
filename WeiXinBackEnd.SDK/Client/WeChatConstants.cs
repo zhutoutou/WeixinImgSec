@@ -12,6 +12,7 @@ namespace WeiXinBackEnd.SDK.Client
         public static class WeChatLoginRequest
         {
             public const string LoginGrantType = "authorization_code";
+            public const string Address = "https://api.weixin.qq.com/sns/jscode2session";
         }
 
     }

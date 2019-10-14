@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WeiXinBackEnd.SDK.Client.Message;
+using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
 using WeiXinBackEnd.SDK.Client.WeChatLogin.Dto;
 
 namespace WeiXinBackEnd.SDK.Client
@@ -59,7 +60,7 @@ namespace WeiXinBackEnd.SDK.Client
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="parameters">The parameters.</param>
-        internal void ApplyRequestParameters(WeChatRequest request, IDictionary<string, string> parameters)
+        internal void ApplyRequestParameters(WeChatLoginRequest request, IDictionary<string, string> parameters)
         {
             request.AppId = _options.AppId;
             request.AppSecret = _options.AppSecret;
@@ -75,10 +76,11 @@ namespace WeiXinBackEnd.SDK.Client
         }
 
 
-        public async Task<WeChatLoginResponse> RequestLoginAsync(IDictionary<string, string> parameters = null, CancellationToken cancellationToken = default)
+        public async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(IDictionary<string, string> parameters = null, CancellationToken cancellationToken = default)
         {
             var request = new WeChatRequest();
             ApplyRequestParameters(request, parameters);
+            request.
         }
     }
 }

@@ -16,24 +16,18 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<WeChatLoginResponse> RequestLoginAsync(this HttpMessageInvoker client,
+        public static async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(this HttpMessageInvoker client,
             WeChatLoginRequest request, CancellationToken cancellationToken = default)
-        {
-            return await client.RequestLoginAsync(request, cancellationToken);
-        }
-
-
-        internal static async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(this HttpMessageInvoker client, WeChatRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                request.Prepare(HttpMethod.Get);
+                request.Prepare();
             }
             catch (Exception ex)
             {
                 return ProtocolResponse<WeChatLoginResponse>.FromException<ProtocolResponse<WeChatLoginResponse>>(ex, ResponseErrorType.Prepare);
             }
-       
+
 
             HttpResponseMessage response;
             try
