@@ -14,13 +14,10 @@ namespace WeiXinBackEnd.SDK.Client
         /// </summary>
         public string AppSecret { get; set; }
 
-
         /// <summary>
-        /// Gets or sets additional protocol parameters.
+        /// AccessToken
         /// </summary>
-        /// <value>
-        /// The parameters.
-        /// </value>
-        public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+        public string AccessToken { get; set; }
+
     }
 }

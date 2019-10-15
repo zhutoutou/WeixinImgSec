@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
+using WeiXinBackEnd.SDK.Client.Extensions;
 using WeiXinBackEnd.SDK.Client.Message;
 using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
-using WeiXinBackEnd.SDK.Client.WeChatLogin.Dto;
+using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
 
 namespace WeiXinBackEnd.SDK.Client
 {
     /// <summary>
     /// Models making HTTP requests for back-end code login notification.
     /// </summary>
-    public class WeChatClient
+    public class WeChatClient : IWeChatClient
     {
         private readonly Func<HttpMessageInvoker> _client;
         private readonly WeChatClientOptions _options;
         private readonly ILogger _logger;
-
+        private Mapper _mapper;
         /// <summary>
         /// Initializes a new instance of the <see cref="WeChatClient"/> class.
         /// </summary>
@@ -53,34 +56,59 @@ namespace WeiXinBackEnd.SDK.Client
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
 
+            InitScopeAutoMapper();
+        }
+
+        private void InitScopeAutoMapper()
+        {
+            // AutoMapper 注册Profiles
+            var config = new MapperConfiguration(cfg => cfg.AddMaps(typeof(WeChatClient).GetTypeInfo().Assembly));
+            config.AssertConfigurationIsValid();
+            _mapper = new Mapper(config);
         }
 
         /// <summary>
-        /// Sets request parameters from the options.
+        ///  小程序Token获取
         /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="parameters">The parameters.</param>
-        internal void ApplyRequestParameters(WeChatLoginRequest request, IDictionary<string, string> parameters)
+        /// <param name="input"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<ProtocolResponse<WeChatLoginResponse>> RequestRefreshTokenAsync(WeChatRefreshTokenInput input, CancellationToken cancellationToken = default)
         {
-            request.AppId = _options.AppId;
-            request.AppSecret = _options.AppSecret;
-            request.Parameters = _options.Parameters;
-
-            if (parameters != null)
+            var request = _mapper.Map<WeChatRefreshTokenInput, WeChatClientOptions, WeChatRefreshTokenRequest>(input, _options);
+            var result = await _client().RequestRefreshTokenAsync(request, _options, cancellationToken).ConfigureAwait(false);
+            if (result.IsError)
             {
-                foreach (var parameter in parameters)
-                {
-                    request.Parameters.Add(parameter);
-                }
+                _logger.LogError(result.Exception, result.Error);
             }
+            else
+            {
+                _logger.LogInformation(WeChatLoginConstants.SuccessLog);
+            }
+
+            return result;
         }
 
-
-        public async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(IDictionary<string, string> parameters = null, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// 小程序登录
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(WeChatLoginInput input, CancellationToken cancellationToken = default)
         {
-            var request = new WeChatRequest();
-            ApplyRequestParameters(request, parameters);
-            request.
+            var request = _mapper.Map<WeChatLoginInput, WeChatClientOptions, WeChatLoginRequest>(input, _options);
+            var result = await _client().RequestLoginAsync(request, _options, cancellationToken).ConfigureAwait(false);
+            if (result.IsError)
+            {
+                _logger.LogError(result.Exception, result.Error);
+            }
+            else
+            {
+                _logger.LogInformation(WeChatLoginConstants.SuccessLog);
+            }
+
+            return result;
         }
     }
 }

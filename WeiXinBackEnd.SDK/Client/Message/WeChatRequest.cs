@@ -36,8 +36,9 @@ namespace WeiXinBackEnd.SDK.Client.Message
             });
         }
 
+
         /// <summary>
-        /// 请求前准备
+        /// 准备
         /// </summary>
         public override void Prepare()
         {
@@ -64,5 +65,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
                 }
             }
         }
+
+ 
     }
 }
