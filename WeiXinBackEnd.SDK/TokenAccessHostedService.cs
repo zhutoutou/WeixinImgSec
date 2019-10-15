@@ -4,28 +4,33 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WeiXinBackEnd.SDK.Client;
+using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
+using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK
 {
     /// <summary>
     /// Token刷新后台服务
     /// </summary>
-    public class TokenAccessHostedService : IHostedService, IDisposable
+    public sealed class TokenAccessHostedService : IHostedService, IDisposable
     {
 
         private readonly ILogger _logger;
         private readonly WeChatClientOptions _options;
         private Timer _timer;
         private readonly IWeChatClient _weChatClient;
+        private readonly WeChatConfiguration _config;
 
         public TokenAccessHostedService(
-            ILogger<TokenAccessHostedService> logger, 
-            WeChatClientOptions options, 
-            IWeChatClient weChatClient)
+            ILogger<TokenAccessHostedService> logger,
+            WeChatClientOptions options,
+            IWeChatClient weChatClient,
+            WeChatConfiguration config)
         {
             _logger = logger;
             _options = options;
             _weChatClient = weChatClient;
+            _config = config;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -33,15 +38,23 @@ namespace WeiXinBackEnd.SDK
             _logger.LogInformation("TokenAccess Background Service is starting.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(70));
+                TimeSpan.FromMinutes(_config.RefreshTimeSpan));
 
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             _logger.LogInformation("TokenAccess Background Service is working.");
-            _options.AccessToken = _weChatClient.RefreshToken();
+            var result = await _weChatClient.RequestRefreshTokenAsync(new WeChatRefreshTokenInput()).ConfigureAwait(false);
+            if (result.IsError)
+            {
+                _logger.LogError(result.Exception, $"刷新Token失败{result.Error}");
+            }
+            else
+            {
+                _options.AccessToken = result.Result.AccessToken;
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

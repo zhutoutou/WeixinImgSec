@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
+using WeiXinBackEnd.SDK.Client.Message.Base;
+using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
 namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
 {
@@ -39,7 +39,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
         {
             Method = HttpMethod.Get;
             Address = WeChatLoginConstants.Address;
-            GrantType = WeChatLoginConstants.LoginGrantType;
+            GrantType = WeChatLoginConstants.GrantType;
             base.Prepare();
         }
 

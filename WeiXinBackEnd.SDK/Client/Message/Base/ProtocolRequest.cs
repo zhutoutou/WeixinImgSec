@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using WeiXinBackEnd.SDK.Client.Extensions;
 
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base
 {
     public abstract class ProtocolRequest : HttpRequestMessage
     {
@@ -24,11 +22,6 @@ namespace WeiXinBackEnd.SDK.Client.Message
         /// </value>
         public string Address { get; set; }
 
-        public abstract void Prepare();
-
-        protected string ToQueryString(IDictionary<string, string> parameters)
-        {
-            return string.Join("&", parameters.Select(v => $"{v.Key}={v.Value}"));
-        }
+   
     }
 }

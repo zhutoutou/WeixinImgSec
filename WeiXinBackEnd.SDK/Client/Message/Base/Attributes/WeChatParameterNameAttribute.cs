@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base.Attributes
 {
     /// <summary>
     /// 标记需要作为传输参数的属性或字段

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WeiXinBackEnd.Core\WeiXinBackEnd.Core.csproj" />
+    <ProjectReference Include="..\WeiXinBackEnd.SDK\WeiXinBackEnd.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

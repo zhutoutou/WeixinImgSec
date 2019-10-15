@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using WeiXinBackEnd.SDK.Client.Extensions;
+using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base
 {
     public class WeChatRequest : ProtocolRequest
     {
@@ -40,7 +40,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
         /// <summary>
         /// 准备
         /// </summary>
-        public override void Prepare()
+        public virtual void Prepare()
         {
             // 验证参数
             CheckValidation();
@@ -49,7 +49,7 @@ namespace WeiXinBackEnd.SDK.Client.Message
 
             if (Method == HttpMethod.Get)
             {
-                var queryString = ToQueryString(Parameters);
+                var queryString = Parameters.ToQueryString();
                 RequestUri = new Uri($"{Address}?{queryString}");
             }
             else if (Method == HttpMethod.Post)

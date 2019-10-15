@@ -1,4 +1,4 @@
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base.Enum
 {
     public enum ResponseErrorType
     {

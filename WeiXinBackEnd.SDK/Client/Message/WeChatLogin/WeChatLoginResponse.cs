@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using WeiXinBackEnd.SDK.Client.Message.Base;
 
 namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
 {

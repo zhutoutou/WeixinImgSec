@@ -7,8 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WeiXinBackEnd.Application.ImgSec;
-using WeiXinBackEnd.Application.Token;
 using WeiXinBackEnd.Core.Extension;
+using WeiXinBackEnd.SDK.Client;
+using WeiXinBackEnd.SDK.Client.Extensions;
 
 namespace WeiXinBackEnd
 {
@@ -46,10 +47,10 @@ namespace WeiXinBackEnd
                         .AllowCredentials()
                 ));
 
+            services.AddWeChatService(new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]),
+                config => { config.RefreshTimeSpan = 80; });
 
             #region DI
-            services.AddSingleton(new TokenManager(Configuration["App:AppId"], Configuration["App:AppSecret"]));
-            services.AddHostedService<TokenAccessHostedService>();
 
             services.AddTransient<IImgSecApp, ImgSecApp>();
             #endregion

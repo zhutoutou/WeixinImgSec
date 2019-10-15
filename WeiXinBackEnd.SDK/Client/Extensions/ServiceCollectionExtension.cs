@@ -1,18 +1,23 @@
-﻿using System.Net.Http;
-using System.Reflection;
-using AutoMapper;
+﻿using System;
+using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        public static void AddWeChat(this ServiceCollection services)
+        public static ServiceCollection AddWeChatService(this ServiceCollection services, WeChatClientOptions options,Action<WeChatConfiguration> action)
         {
+            var config = new WeChatConfiguration();
+            action?.Invoke(config);
+
+            services.AddSingleton(config);
+            services.AddSingleton(options);
             services.AddTransient<HttpMessageInvoker>();
-            services.AddSingleton<WeChatClientOptions>();
             services.AddTransient<IWeChatClient, WeChatClient>();
+            services.AddHostedService<TokenAccessHostedService>();
+            return services;
         }
     }
 }

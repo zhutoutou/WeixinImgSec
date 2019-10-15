@@ -4,6 +4,12 @@ namespace WeiXinBackEnd.SDK.Client
 {
     public class WeChatClientOptions
     {
+        public WeChatClientOptions(string appId, string appSecret)
+        {
+            AppId = appId;
+            AppSecret = appSecret;
+        }
+
         /// <summary>
         /// AppId
         /// </summary>

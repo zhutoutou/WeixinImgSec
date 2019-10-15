@@ -1,10 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
+using WeiXinBackEnd.SDK.Client.Message.Base;
+using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
 namespace WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken
 {
     public class WeChatRefreshTokenRequest:WeChatRequest
     {
+        /// <summary>
+        /// 授权方式 默认值为client_credential
+        /// </summary>
+        [Required]
+        [WeChatParameterName("grant_type")]
+        public string GrantType { get; set; }
+
         /// <summary>
         /// AppId
         /// </summary>
@@ -22,7 +31,8 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken
         public override void Prepare()
         {
             Method = HttpMethod.Get;
-            Address = WeChatLoginConstants.Address;
+            GrantType = WeChatRefreshTokenConstants.GrantType;
+            Address = WeChatRefreshTokenConstants.Address;
             base.Prepare();
         }
     }

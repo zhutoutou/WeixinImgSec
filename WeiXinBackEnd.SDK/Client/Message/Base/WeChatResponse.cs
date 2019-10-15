@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base
 {
     public class WeChatResponse
     {

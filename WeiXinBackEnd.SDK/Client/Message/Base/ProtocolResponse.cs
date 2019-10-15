@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WeiXinBackEnd.SDK.Client.Extensions;
+using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
 
-namespace WeiXinBackEnd.SDK.Client.Message
+namespace WeiXinBackEnd.SDK.Client.Message.Base
 {
     /// <summary>
     /// A protocol response
