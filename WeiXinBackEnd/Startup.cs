@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WeiXinBackEnd.Application.ImgSec;
+using WeiXinBackEnd.Application.UserAccount;
 using WeiXinBackEnd.Core.Extension;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Extensions;
@@ -53,6 +54,7 @@ namespace WeiXinBackEnd
             #region DI
 
             services.AddTransient<IImgSecApp, ImgSecApp>();
+            services.AddTransient<IUserAccountApp, UserAccountApp>();
             #endregion
 
 

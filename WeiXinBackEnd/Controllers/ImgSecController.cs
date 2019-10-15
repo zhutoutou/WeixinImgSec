@@ -32,7 +32,7 @@ namespace WeiXinBackEnd.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ImgSecAuthResponse> UpLoad()
+        public async Task<ActionResult<ImgSecAuthResponse>> UpLoad()
         {
             var files = Request.Form.Files;
             if (!files.Any()) 
@@ -42,7 +42,8 @@ namespace WeiXinBackEnd.Controllers
             var file = files.First();
             await file.OpenReadStream().ReadAsync(buffer);
             
-            return await _imgSec.AuthAsync(new ImgSecAuthInput(file.FileName, buffer));
+            var result = await _imgSec.AuthAsync(new ImgSecAuthInput(file.FileName, buffer));
+            return Ok(result);
         }
 
     }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using WeiXinBackEnd.Application.UserAccount;
+using WeiXinBackEnd.Application.UserAccount.Dto;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
 
@@ -10,19 +13,19 @@ namespace WeiXinBackEnd.Controllers
     [Route("api/[controller]")]
     public class UserAccountController:Controller
     {
-        private readonly IWeChatClient _weChatClient;
 
-        public UserAccountController(IWeChatClient weChatClient)
+        private readonly IUserAccountApp _userAccount;
+
+        public UserAccountController(IUserAccountApp userAccount)
         {
-            _weChatClient = weChatClient;
+            _userAccount = userAccount;
         }
 
         [HttpGet("Login")]
-        public async IActionResult<WeChatLoginResponse> Login(string loginCode)
+        public async Task<ActionResult<WeChatLoginResponse>> Login(UserAccountInput input)
         {
-            var input = new WeChatLoginInput() {LoginCode = loginCode};
-            var result = await _weChatClient.RequestLoginAsync(input).ConfigureAwait(false);
-            return Ok(result.Result);
+            var result = await _userAccount.Login(input).ConfigureAwait(false);
+            return Ok(result);
         }
     }
 }
