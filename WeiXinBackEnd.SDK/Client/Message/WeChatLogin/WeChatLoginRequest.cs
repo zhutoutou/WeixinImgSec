@@ -38,6 +38,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
         public override void Prepare()
         {
             Method = HttpMethod.Get;
+            Address = WeChatLoginConstants.Address;
             GrantType = WeChatLoginConstants.LoginGrantType;
             base.Prepare();
         }

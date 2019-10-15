@@ -3,20 +3,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WeiXinBackEnd.SDK.Client;
 
-namespace WeiXinBackEnd.Application.Token
+namespace WeiXinBackEnd.SDK
 {
-    public class TokenAccessHostedService: IHostedService, IDisposable
+    /// <summary>
+    /// Token刷新后台服务
+    /// </summary>
+    public class TokenAccessHostedService : IHostedService, IDisposable
     {
 
         private readonly ILogger _logger;
-        private readonly TokenManager _tokenManager;
+        private readonly WeChatClientOptions _options;
         private Timer _timer;
+        private readonly IWeChatClient _weChatClient;
 
-        public TokenAccessHostedService(ILogger<TokenAccessHostedService> logger, TokenManager tokenManager)
+        public TokenAccessHostedService(
+            ILogger<TokenAccessHostedService> logger, 
+            WeChatClientOptions options, 
+            IWeChatClient weChatClient)
         {
             _logger = logger;
-            _tokenManager = tokenManager;
+            _options = options;
+            _weChatClient = weChatClient;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -32,7 +41,7 @@ namespace WeiXinBackEnd.Application.Token
         private void DoWork(object state)
         {
             _logger.LogInformation("TokenAccess Background Service is working.");
-            _ = _tokenManager.RefreshToken();
+            _options.AccessToken = _weChatClient.RefreshToken();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -1,4 +1,6 @@
 ﻿using System.Net.Http;
+using System.Reflection;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
