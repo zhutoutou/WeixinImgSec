@@ -7,6 +7,10 @@ namespace WeiXinBackEnd.SDK.Configuration
     public class WeChatConfiguration
     {
         /// <summary>
+        /// 小程序信息配置
+        /// </summary>
+        public WeChatClientOptions AppConfig { get; set; }
+        /// <summary>
         /// Token刷新间隔 应低于120分钟
         /// </summary>
         public int RefreshTimeSpan { get; set; } = WeChatConfigurationConstants.DefaultRefreshTimeSpan;

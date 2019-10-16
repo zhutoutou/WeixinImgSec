@@ -16,19 +16,16 @@ namespace WeiXinBackEnd.SDK
     {
 
         private readonly ILogger _logger;
-        private readonly WeChatClientOptions _options;
         private Timer _timer;
         private readonly IWeChatClient _weChatClient;
         private readonly WeChatConfiguration _config;
 
         public TokenAccessHostedService(
             ILogger<TokenAccessHostedService> logger,
-            WeChatClientOptions options,
             IWeChatClient weChatClient,
             WeChatConfiguration config)
         {
             _logger = logger;
-            _options = options;
             _weChatClient = weChatClient;
             _config = config;
         }
@@ -53,7 +50,7 @@ namespace WeiXinBackEnd.SDK
             }
             else
             {
-                _options.AccessToken = result.Result.AccessToken;
+                _config.AppConfig.AccessToken = result.Result.AccessToken;
             }
         }
 

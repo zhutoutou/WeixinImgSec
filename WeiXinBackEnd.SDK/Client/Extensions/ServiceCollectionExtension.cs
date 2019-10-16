@@ -7,13 +7,15 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddWeChatCore(this IServiceCollection services, WeChatClientOptions options, Action<WeChatConfiguration> action)
+        public static IServiceCollection AddWeChatCore(this IServiceCollection services,Action<WeChatConfiguration> options)
         {
             var config = new WeChatConfiguration();
-            action?.Invoke(config);
+            options?.Invoke(config);
+            if(config.AppConfig == null)
+                throw new ArgumentNullException(nameof(config.AppConfig));
+
             services.AddSingleton(config);
-            services.AddSingleton(options);
-            services.AddWeChatHttpClient();
+            services.AddWeChatHttpClient(config.ClientFactory);
             services.AddTransient<IWeChatClient, WeChatClient>();
             services.AddHostedService<TokenAccessHostedService>();
             return services;
@@ -23,22 +25,26 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// 定义HttpMessageInvoker
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="httpFunc"></param>
         /// <returns></returns>
-        internal static IServiceCollection AddWeChatHttpClient(this IServiceCollection services)
+        internal static IServiceCollection AddWeChatHttpClient(this IServiceCollection services,Func<HttpMessageInvoker> httpFunc)
         {
-            services.AddTransient(ioc =>
+            if (httpFunc != null)
             {
-                var options = ioc.GetService<WeChatConfiguration>();
-                if (options.ClientFactory == null)
-                {
-                    services.AddHttpClient();
-                    var factory = ioc.GetService<IHttpClientFactory>();
-                    return () => factory.CreateClient();
-                }
+                services.AddTransient<Func<HttpMessageInvoker>>((ioc)=>httpFunc);
+            }
+            else
+            {
+                services.AddHttpClient();
+                services.AddTransient<Func<HttpMessageInvoker>>(ioc => {
+                    return () =>
+                    {
+                        var factory = ioc.GetService<IHttpClientFactory>();
+                        return factory.CreateClient();
+                    };
+                });
 
-                return options.ClientFactory;
-            });
-
+            }
             return services;
         }
     }

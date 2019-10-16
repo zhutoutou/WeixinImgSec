@@ -37,7 +37,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatImgSec
             CheckValidation();
             // 构建参数
             ConstructParam();
-
+            
 
             var boundary = Guid.NewGuid().ToString();
             var boundaryParameter = new NameValueHeaderValue("boundary", boundary);
