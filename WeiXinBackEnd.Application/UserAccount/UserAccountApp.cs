@@ -14,10 +14,10 @@ namespace WeiXinBackEnd.Application.UserAccount
             _weChatClient = weChatClient;
         }
 
-        public async Task<UserAccountResponse> Login(UserAccountInput input)
+        public async Task<LoginResponse> Login(LoginInput input)
         {
             var result = await _weChatClient.RequestLoginAsync(new WeChatLoginInput() { LoginCode = input.LoginCode }).ConfigureAwait(false);
-            return (UserAccountResponse) result.Result;
+            return (LoginResponse) result.Result;
         }
     }
 }

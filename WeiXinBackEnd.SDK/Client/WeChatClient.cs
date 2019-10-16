@@ -78,7 +78,7 @@ namespace WeiXinBackEnd.SDK.Client
         public async Task<ProtocolResponse<WeChatRefreshTokenResponse>> RequestRefreshTokenAsync(WeChatRefreshTokenInput input, CancellationToken cancellationToken = default)
         {
             var request = _mapper.Map<WeChatRefreshTokenInput, WeChatClientOptions, WeChatRefreshTokenRequest>(input, _options);
-            var result = await _client().RequestAsync<WeChatRefreshTokenResponse, WeChatRefreshTokenRequest>(request, _options, cancellationToken).ConfigureAwait(false);
+            var result = await _client().RequestAsync<WeChatRefreshTokenResponse, WeChatRefreshTokenRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);
@@ -100,7 +100,7 @@ namespace WeiXinBackEnd.SDK.Client
         public async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(WeChatLoginInput input, CancellationToken cancellationToken = default)
         {
             var request = _mapper.Map<WeChatLoginInput, WeChatClientOptions, WeChatLoginRequest>(input, _options);
-            var result = await _client().RequestAsync<WeChatLoginResponse, WeChatLoginRequest>(request, _options, cancellationToken).ConfigureAwait(false);
+            var result = await _client().RequestAsync<WeChatLoginResponse, WeChatLoginRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);
@@ -122,7 +122,7 @@ namespace WeiXinBackEnd.SDK.Client
         public async Task<ProtocolResponse<WeChatImgSecResponse>> RequestImgSecAsync(WeChatImgSecInput input, CancellationToken cancellationToken = default)
         {
             var request = _mapper.Map<WeChatImgSecInput, WeChatClientOptions, WeChatImgSecRequest>(input, _options);
-            var result = await _client().RequestAsync<WeChatImgSecResponse, WeChatImgSecRequest>(request, _options, cancellationToken).ConfigureAwait(false);
+            var result = await _client().RequestAsync<WeChatImgSecResponse, WeChatImgSecRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);

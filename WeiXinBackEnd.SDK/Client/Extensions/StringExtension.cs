@@ -4,34 +4,6 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
 {
     public static class StringExtension
     {
-        public static string RemovePostFix(this string str, params string[] postFixes)
-        {
-            if (str == null)
-            {
-                return null;
-            }
-
-            if (str.IsNullOrWhiteSpace())
-            {
-                return string.Empty;
-            }
-
-            if (postFixes.IsNullOrEmpty())
-            {
-                return str;
-            }
-
-            foreach (var postFix in postFixes)
-            {
-                if (str.EndsWith(postFix))
-                {
-                    return str.Left(str.Length - postFix.Length);
-                }
-            }
-
-            return str;
-        }
-
         public static bool IsNullOrEmpty(this string str)
         {
             return string.IsNullOrEmpty(str);

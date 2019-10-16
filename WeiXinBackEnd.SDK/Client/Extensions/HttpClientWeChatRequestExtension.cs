@@ -17,11 +17,10 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// </summary>
         /// <param name="client"></param>
         /// <param name="request"></param>
-        /// <param name="options"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public static async Task<ProtocolResponse<TV>> RequestAsync<TV, TK>(this HttpMessageInvoker client,
-            TK request, WeChatClientOptions options, CancellationToken cancellationToken = default)
+            TK request,  CancellationToken cancellationToken = default)
             where TV : WeChatResponse 
             where TK : WeChatRequest
         {

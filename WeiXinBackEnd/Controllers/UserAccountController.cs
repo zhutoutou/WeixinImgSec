@@ -22,7 +22,7 @@ namespace WeiXinBackEnd.Controllers
         }
 
         [HttpGet("Login")]
-        public async Task<ActionResult<WeChatLoginResponse>> Login(UserAccountInput input)
+        public async Task<ActionResult<WeChatLoginResponse>> Login(LoginInput input)
         {
             var result = await _userAccount.Login(input).ConfigureAwait(false);
             return Ok(result);

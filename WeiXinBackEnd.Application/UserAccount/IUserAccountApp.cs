@@ -5,7 +5,7 @@ namespace WeiXinBackEnd.Application.UserAccount
 {
     public interface IUserAccountApp
     {
-        Task<UserAccountResponse> Login(UserAccountInput input);
+        Task<LoginResponse> Login(LoginInput input);
 
     }
 }

@@ -2,7 +2,7 @@
 
 namespace WeiXinBackEnd.Application.UserAccount.Dto
 {
-    public class UserAccountResponse:WeChatLoginResponse
+    public class LoginResponse:WeChatLoginResponse
     {
         
     }

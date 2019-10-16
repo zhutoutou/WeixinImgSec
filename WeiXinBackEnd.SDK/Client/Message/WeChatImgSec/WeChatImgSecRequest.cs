@@ -30,12 +30,14 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatImgSec
 
         public override void Prepare()
         {
+            Method = HttpMethod.Post;
+            Address = WeChatImgSecConstants.Address;
+
             // 验证参数
             CheckValidation();
             // 构建参数
             ConstructParam();
 
-            Method = HttpMethod.Post;
 
             var boundary = Guid.NewGuid().ToString();
             var boundaryParameter = new NameValueHeaderValue("boundary", boundary);

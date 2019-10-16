@@ -48,8 +48,8 @@ namespace WeiXinBackEnd
                         .AllowCredentials()
                 ));
 
-            services.AddWeChatService(new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]),
-                config => { config.RefreshTimeSpan = 80; });
+            services.AddWeChatCore(new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]),
+                config => { config.RefreshTimeSpan = 2; });
 
             #region DI
 
