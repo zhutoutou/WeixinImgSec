@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
@@ -7,11 +6,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using WeiXinBackEnd.SDK.Client.Extensions;
-using WeiXinBackEnd.SDK.Client.Message;
+using WeiXinBackEnd.SDK.Client.Message._01_Login;
 using WeiXinBackEnd.SDK.Client.Message.Base;
-using WeiXinBackEnd.SDK.Client.Message.WeChatImgSec;
-using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
-using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
+using WeiXinBackEnd.SDK.Client.Message.ImgSec;
+using WeiXinBackEnd.SDK.Client.Message.RefreshToken;
 using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK.Client
@@ -77,8 +75,8 @@ namespace WeiXinBackEnd.SDK.Client
         /// <returns></returns>
         public async Task<ProtocolResponse<WeChatRefreshTokenResponse>> RequestRefreshTokenAsync(WeChatRefreshTokenInput input, CancellationToken cancellationToken = default)
         {
-            var request = _mapper.Map<WeChatRefreshTokenInput, WeChatClientOptions, WeChatRefreshTokenRequest>(input, _config.AppConfig);
-            var result = await _client().RequestAsync<WeChatRefreshTokenResponse, WeChatRefreshTokenRequest>(request, cancellationToken).ConfigureAwait(false);
+            var request = _mapper.Map<WeChatRefreshTokenInput, WeChatClientOptions, RefreshTokenRequest>(input, _config.AppConfig);
+            var result = await _client().RequestAsync<WeChatRefreshTokenResponse, RefreshTokenRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);
@@ -99,8 +97,8 @@ namespace WeiXinBackEnd.SDK.Client
         /// <returns></returns>
         public async Task<ProtocolResponse<WeChatLoginResponse>> RequestLoginAsync(WeChatLoginInput input, CancellationToken cancellationToken = default)
         {
-            var request = _mapper.Map<WeChatLoginInput, WeChatClientOptions, WeChatLoginRequest>(input, _config.AppConfig);
-            var result = await _client().RequestAsync<WeChatLoginResponse, WeChatLoginRequest>(request, cancellationToken).ConfigureAwait(false);
+            var request = _mapper.Map<WeChatLoginInput, WeChatClientOptions, LoginRequest>(input, _config.AppConfig);
+            var result = await _client().RequestAsync<WeChatLoginResponse, LoginRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);
@@ -121,8 +119,8 @@ namespace WeiXinBackEnd.SDK.Client
         /// <returns></returns>
         public async Task<ProtocolResponse<WeChatImgSecResponse>> RequestImgSecAsync(WeChatImgSecInput input, CancellationToken cancellationToken = default)
         {
-            var request = _mapper.Map<WeChatImgSecInput, WeChatClientOptions, WeChatImgSecRequest>(input, _config.AppConfig);
-            var result = await _client().RequestAsync<WeChatImgSecResponse, WeChatImgSecRequest>(request, cancellationToken).ConfigureAwait(false);
+            var request = _mapper.Map<WeChatImgSecInput, WeChatClientOptions, ImgSecRequest>(input, _config.AppConfig);
+            var result = await _client().RequestAsync<WeChatImgSecResponse, ImgSecRequest>(request, cancellationToken).ConfigureAwait(false);
             if (result.IsError)
             {
                 _logger.LogError(result.Exception, result.Error);

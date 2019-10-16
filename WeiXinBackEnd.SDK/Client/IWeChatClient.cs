@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using WeiXinBackEnd.SDK.Client.Message;
+using WeiXinBackEnd.SDK.Client.Message._01_Login;
 using WeiXinBackEnd.SDK.Client.Message.Base;
-using WeiXinBackEnd.SDK.Client.Message.WeChatImgSec;
-using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
-using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
+using WeiXinBackEnd.SDK.Client.Message.ImgSec;
+using WeiXinBackEnd.SDK.Client.Message.RefreshToken;
 
 namespace WeiXinBackEnd.SDK.Client
 {

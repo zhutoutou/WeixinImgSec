@@ -19,6 +19,14 @@ namespace WeiXinBackEnd
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.SetBasePath(Directory.GetCurrentDirectory());
+                    config.AddJsonFile(
+                        "appsettings.json", optional: false, reloadOnChange: false);
+                    config.AddJsonFile(
+                        "appsettings-wechat.json", optional: false, reloadOnChange: false);
+                })
                 .ConfigureLogging(cnf =>
                 {
                     cnf.ClearProviders();

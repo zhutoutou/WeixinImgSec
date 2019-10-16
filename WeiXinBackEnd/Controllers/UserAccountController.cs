@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using WeiXinBackEnd.Application.UserAccount;
 using WeiXinBackEnd.Application.UserAccount.Dto;
 using WeiXinBackEnd.SDK.Client;
-using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
 
 namespace WeiXinBackEnd.Controllers
 {
@@ -22,7 +21,7 @@ namespace WeiXinBackEnd.Controllers
         }
 
         [HttpGet("Login")]
-        public async Task<ActionResult<WeChatLoginResponse>> Login(LoginInput input)
+        public async Task<ActionResult<LoginResponse>> Login(Application.UserAccount.Dto.LoginInput input)
         {
             var result = await _userAccount.Login(input).ConfigureAwait(false);
             return Ok(result);

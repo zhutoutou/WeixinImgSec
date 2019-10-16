@@ -3,9 +3,9 @@ using System.Net.Http;
 using WeiXinBackEnd.SDK.Client.Message.Base;
 using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
-namespace WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken
+namespace WeiXinBackEnd.SDK.Client.Message.RefreshToken
 {
-    public class WeChatRefreshTokenRequest:WeChatRequest
+    internal class RefreshTokenRequest:WeChatRequest
     {
         /// <summary>
         /// 授权方式 默认值为client_credential

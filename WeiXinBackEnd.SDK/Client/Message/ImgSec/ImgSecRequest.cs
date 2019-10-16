@@ -6,9 +6,9 @@ using WeiXinBackEnd.SDK.Client.Extensions;
 using WeiXinBackEnd.SDK.Client.Message.Base;
 using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
-namespace WeiXinBackEnd.SDK.Client.Message.WeChatImgSec
+namespace WeiXinBackEnd.SDK.Client.Message.ImgSec
 {
-    public class WeChatImgSecRequest:WeChatRequest
+    internal class ImgSecRequest:WeChatRequest
     {
         /// <summary>
         /// 文件名
@@ -51,6 +51,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.WeChatImgSec
             Content = formData;
 
             Address = $"{Address}?{Parameters.ToQueryString()}";
+            RequestUri = new Uri(Address);
         }
     }
 }

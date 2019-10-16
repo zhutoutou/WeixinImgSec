@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using WeiXinBackEnd.Application.ImgSec.Dto;
 using WeiXinBackEnd.Core.Extension;
 using WeiXinBackEnd.SDK.Client;
-using WeiXinBackEnd.SDK.Client.Message.WeChatImgSec;
+using WeiXinBackEnd.SDK.Client.Message.ImgSec;
 
 namespace WeiXinBackEnd.Application.ImgSec
 {

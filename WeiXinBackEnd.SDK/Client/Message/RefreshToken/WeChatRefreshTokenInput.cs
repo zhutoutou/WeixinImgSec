@@ -1,4 +1,4 @@
-﻿namespace WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken
+﻿namespace WeiXinBackEnd.SDK.Client.Message.RefreshToken
 {
     public class WeChatRefreshTokenInput
     {

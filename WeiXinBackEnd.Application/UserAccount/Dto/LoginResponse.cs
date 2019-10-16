@@ -1,8 +1,8 @@
-﻿using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
+﻿using WeiXinBackEnd.SDK.Client.Message._01_Login;
 
 namespace WeiXinBackEnd.Application.UserAccount.Dto
 {
-    public class LoginResponse:WeChatLoginResponse
+    public class LoginResponse : WeChatLoginResponse
     {
         
     }

@@ -1,4 +1,4 @@
-﻿namespace WeiXinBackEnd.SDK.Client.Message.WeChatImgSec
+﻿namespace WeiXinBackEnd.SDK.Client.Message.ImgSec
 {
     public class WeChatImgSecInput
     {

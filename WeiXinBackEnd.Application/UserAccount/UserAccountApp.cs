@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using WeiXinBackEnd.Application.UserAccount.Dto;
 using WeiXinBackEnd.SDK.Client;
-using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
+using WeiXinBackEnd.SDK.Client.Message._01_Login;
 
 namespace WeiXinBackEnd.Application.UserAccount
 {
@@ -14,7 +14,7 @@ namespace WeiXinBackEnd.Application.UserAccount
             _weChatClient = weChatClient;
         }
 
-        public async Task<LoginResponse> Login(LoginInput input)
+        public async Task<LoginResponse> Login(Dto.LoginInput input)
         {
             var result = await _weChatClient.RequestLoginAsync(new WeChatLoginInput() { LoginCode = input.LoginCode }).ConfigureAwait(false);
             return (LoginResponse) result.Result;

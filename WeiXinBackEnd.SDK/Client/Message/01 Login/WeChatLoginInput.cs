@@ -1,4 +1,4 @@
-﻿namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
+﻿namespace WeiXinBackEnd.SDK.Client.Message._01_Login
 {
     public class WeChatLoginInput
     {

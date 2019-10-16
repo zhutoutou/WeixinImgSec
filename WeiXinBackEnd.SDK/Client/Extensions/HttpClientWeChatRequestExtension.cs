@@ -4,9 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using WeiXinBackEnd.SDK.Client.Message.Base;
 using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
-using WeiXinBackEnd.SDK.Client.Message.WeChatImgSec;
-using WeiXinBackEnd.SDK.Client.Message.WeChatLogin;
-using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using WeiXinBackEnd.SDK.Client.Message.Base;
 
-namespace WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken
+namespace WeiXinBackEnd.SDK.Client.Message.RefreshToken
 {
     public class WeChatRefreshTokenResponse:WeChatResponse
     {

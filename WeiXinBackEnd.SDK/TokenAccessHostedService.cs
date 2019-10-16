@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WeiXinBackEnd.SDK.Client;
-using WeiXinBackEnd.SDK.Client.Message.WeChatRefreshToken;
+using WeiXinBackEnd.SDK.Client.Message.RefreshToken;
 using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK

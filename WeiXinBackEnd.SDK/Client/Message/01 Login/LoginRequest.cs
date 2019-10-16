@@ -3,9 +3,9 @@ using System.Net.Http;
 using WeiXinBackEnd.SDK.Client.Message.Base;
 using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 
-namespace WeiXinBackEnd.SDK.Client.Message.WeChatLogin
+namespace WeiXinBackEnd.SDK.Client.Message._01_Login
 {
-    public class WeChatLoginRequest: WeChatRequest
+    internal class LoginRequest: WeChatRequest
     {
         /// <summary>
         /// 登录Code

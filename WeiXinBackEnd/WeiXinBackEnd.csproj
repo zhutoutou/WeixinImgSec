@@ -15,4 +15,6 @@
     <ProjectReference Include="..\WeiXinBackEnd.Application\WeiXinBackEnd.Application.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings-wechat_1json__JsonSchema="http://json.schemastore.org/appsettings" /></VisualStudio></ProjectExtensions>
+
 </Project>

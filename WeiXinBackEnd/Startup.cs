@@ -50,7 +50,8 @@ namespace WeiXinBackEnd
 
             services.AddWeChatCore(options =>
             {
-                options.AppConfig = new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]);
+                //options.AppConfig = new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]);
+                options.AppConfig = WeChatClientOptions.GetOptionsFromConfig(Configuration, "WeChatPlateForm:MiniProgram");
                 options.RefreshTimeSpan = 1;
             });
 
