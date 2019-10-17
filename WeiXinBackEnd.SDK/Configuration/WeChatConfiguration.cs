@@ -20,7 +20,7 @@ namespace WeiXinBackEnd.SDK.Configuration
         /// <summary>
         /// 是否开启支付
         /// </summary>
-        public bool EnableTransaction { get; set; }
+        public bool UseTransaction { get; set; }
 
         /// <summary>
         /// 用于客户端的自定义
@@ -34,7 +34,7 @@ namespace WeiXinBackEnd.SDK.Configuration
         public void AssertAppConfigIsValid()
         {
             var requiredType = RequiredType.App;
-            if (EnableTransaction)
+            if (UseTransaction)
                 requiredType = requiredType | RequiredType.Mch;
             AppConfig.Assert(assertType: requiredType);
          
