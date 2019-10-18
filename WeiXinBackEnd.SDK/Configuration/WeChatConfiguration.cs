@@ -2,6 +2,8 @@
 using System.Net.Http;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
+using WeiXinBackEnd.SDK.Core.Cache;
+using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Configuration
 {
@@ -11,7 +13,7 @@ namespace WeiXinBackEnd.SDK.Configuration
         /// 小程序信息配置
         /// </summary>
         public WeChatClientOptions AppConfig { get; set; }
-
+        
         /// <summary>
         /// Token刷新间隔 应低于120分钟
         /// </summary>
@@ -27,6 +29,7 @@ namespace WeiXinBackEnd.SDK.Configuration
         /// </summary>
         public Func<HttpMessageInvoker> ClientFactory {get;set;}
 
+        public Type CacheType { get; private set; }= typeof(DefaultWeChatCache);
 
         /// <summary>
         /// 验证AppConfig的必要性
@@ -38,6 +41,15 @@ namespace WeiXinBackEnd.SDK.Configuration
                 requiredType = requiredType | RequiredType.Mch;
             AppConfig.Assert(assertType: requiredType);
          
+        }
+
+        /// <summary>
+        /// 使用其他IWeChatCache实现
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void UseCache<T>() where T : IWeChatCache
+        {
+            CacheType = typeof(T);
         }
     }
 }

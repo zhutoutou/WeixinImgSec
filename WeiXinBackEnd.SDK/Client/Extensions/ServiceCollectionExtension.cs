@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Net.Http;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Nito.AsyncEx;
 using WeiXinBackEnd.SDK.Configuration;
+using WeiXinBackEnd.SDK.Core.Cache;
+using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {
@@ -12,30 +17,48 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         {
             #region Construct Config
             var config = new WeChatConfiguration();
-            options?.Invoke(config);
+            options(config);
             if (config.AppConfig == null)
                 throw new ArgumentNullException(nameof(config.AppConfig));
             config.AssertAppConfigIsValid();
-            #endregion
-            
             services.AddSingleton(config);
-            services.AddWeChatHttpClient(config.ClientFactory);
+            #endregion
+
+            services.AddWeChatCache(config);
+            services.AddWeChatHttpClient(config);
             services.AddTransient<IWeChatClient, WeChatClient>();
             services.AddHostedService<TokenAccessHostedService>();
             return services;
         }
 
         /// <summary>
+        /// 定义WeChat缓存
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        private static void AddWeChatCache(this IServiceCollection services, WeChatConfiguration config)
+        {
+            if (config.CacheType == typeof(DefaultWeChatCache))
+            {
+                services.AddSingleton(new MemoryCache(new MemoryCacheOptions()));
+                services.AddSingleton(new ConcurrentDictionary<string, AsyncLock>());
+            }
+       
+            services.AddTransient(typeof(IWeChatCache),config.CacheType);
+        }
+
+        /// <summary>
         /// 定义HttpMessageInvoker
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="httpFunc"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
-        internal static IServiceCollection AddWeChatHttpClient(this IServiceCollection services,Func<HttpMessageInvoker> httpFunc)
+        private static void AddWeChatHttpClient(this IServiceCollection services, WeChatConfiguration config)
         {
+            var httpFunc = config.ClientFactory;
             if (httpFunc != null)
             {
-                services.AddTransient<Func<HttpMessageInvoker>>((ioc)=>httpFunc);
+                services.AddTransient(ioc=>httpFunc);
             }
             else
             {
@@ -49,7 +72,6 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
                 });
 
             }
-            return services;
         }
     }
 }
