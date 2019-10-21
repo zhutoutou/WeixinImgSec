@@ -11,6 +11,8 @@ using WeiXinBackEnd.Application.UserAccount;
 using WeiXinBackEnd.Core.Extension;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Extensions;
+using WeiXinBackEnd.SDK.Configuration;
+using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd
 {
@@ -50,8 +52,9 @@ namespace WeiXinBackEnd
 
             services.AddWeChatCore(options =>
             {
-                //options.AppConfig = new WeChatClientOptions(Configuration["App:AppId"], Configuration["App:AppSecret"]);
-                options.AppConfig = WeChatClientOptions.GetOptionsFromConfig(Configuration, "WeChatPlateForm:MiniProgram");
+                //options.WeChatConfigFunc = new WeChatConfig(Configuration["App:AppId"], Configuration["App:AppSecret"]);
+                options.WeChatConfig =WeChatConfig.GetOptionsFromConfig(Configuration, "WeChatPlateForm:MiniProgram");
+                options.CacheType = typeof(DefaultWeChatCache);
                 options.RefreshTimeSpan = 1;
             });
 

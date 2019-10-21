@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK.Client.Message.RefreshToken.Profile
 {
@@ -7,7 +8,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.RefreshToken.Profile
         public RefreshTokenProfile()
         {
             CreateMap<WeChatRefreshTokenInput, RefreshTokenRequest>(MemberList.None);
-            CreateMap<WeChatClientOptions, RefreshTokenRequest>(MemberList.None);
+            CreateMap<WeChatConfig, RefreshTokenRequest>(MemberList.None);
         }
     }
 }

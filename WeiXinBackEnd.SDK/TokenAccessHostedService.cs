@@ -20,9 +20,10 @@ namespace WeiXinBackEnd.SDK
         private readonly ILogger _logger;
         private Timer _timer;
         private readonly IWeChatClient _weChatClient;
-        private readonly WeChatConfiguration _config;
-        private readonly IWeChatCache _cache;
+        private readonly WeChatOptions _config;
+        private readonly IWeChatCache _cacheManager;
         private readonly WeChatAsyncEx _asyncEx;
+        private readonly int _expireTime;
         private readonly int _allowRefreshTimeOffset;
 
         /// <summary>
@@ -36,17 +37,19 @@ namespace WeiXinBackEnd.SDK
         public TokenAccessHostedService(
             ILogger<TokenAccessHostedService> logger,
             IWeChatClient weChatClient,
-            WeChatConfiguration config,
+            WeChatOptions config,
             IWeChatCache cache,
             WeChatAsyncEx asyncEx)
         {
             _logger = logger;
             _weChatClient = weChatClient;
             _config = config;
-            _cache = cache;
+            _cacheManager = cache;
             _asyncEx = asyncEx;
-            // 刷新时间剩余不足 1/5 时运行刷新
-            _allowRefreshTimeOffset = _config.RefreshTimeSpan * 60 / 5 * 1;
+
+            // 过期策略 1/4过期生效，1/5刷新间隔 刷新必定命中过期片段
+            _expireTime = _config.RefreshTimeSpan * 60 * 5;
+            _allowRefreshTimeOffset = _config.RefreshTimeSpan * 60 * 5 / 4;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -59,16 +62,21 @@ namespace WeiXinBackEnd.SDK
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 刷新Token
+        /// </summary>
+        /// <param name="state"></param>
         private async void DoWork(object state)
         {
             _logger.LogInformation("TokenAccess Background Service is working.");
-            CancellationToken lockToken = new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
+
+            CancellationToken lockToken = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
             await _asyncEx.GetLockAsync(WeChatRefreshTokenConstants.AccessTokenCacheKey, async () =>
             {
-                CancellationToken cacheToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token;
-                var entry = await _cache.GetAsync<WeChatCacheEntry<string>>(
+                CancellationToken cacheToken = new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token;
+                var entry = await _cacheManager.GetAsync<WeChatCacheEntry<string>>(
                     WeChatRefreshTokenConstants.AccessTokenCacheKey, cacheToken);
-                if ((entry.GetExpireOffset?.TotalMilliseconds ?? 0) < _allowRefreshTimeOffset)
+                if (entry == null || (entry.GetExpireOffset?.TotalSeconds ?? 0) < _allowRefreshTimeOffset)
                 {
                     var result = await _weChatClient.RequestRefreshTokenAsync(new WeChatRefreshTokenInput(), new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token).ConfigureAwait(false);
                     if (result.IsError)
@@ -77,10 +85,10 @@ namespace WeiXinBackEnd.SDK
                     }
                     else
                     {
-                        await _cache.SetAsync(WeChatRefreshTokenConstants.AccessTokenCacheKey, new WeChatCacheEntry<string>()
+                        await _cacheManager.SetAsync(WeChatRefreshTokenConstants.AccessTokenCacheKey, new WeChatCacheEntry<string>
                         {
                             Value = result.Result.AccessToken,
-                            ExpireTime = DateTime.Now.Add(TimeSpan.FromMinutes(_config.RefreshTimeSpan)),
+                            ExpireTime = DateTime.Now.Add(TimeSpan.FromSeconds(_expireTime)),
                         }, cacheToken);
                         _logger.LogInformation(WeChatRefreshTokenConstants.RefreshAccessTokenCacheSuccess);
                     }
@@ -91,7 +99,6 @@ namespace WeiXinBackEnd.SDK
                 }
 
             }, lockToken);
-
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

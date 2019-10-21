@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Net.Http;
-using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
-using WeiXinBackEnd.SDK.Core.Cache;
 using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Configuration
 {
-    public class WeChatConfiguration
+    public class WeChatOptions
     {
+        public WeChatOptions()
+        {
+            CacheType = typeof(DefaultWeChatCache);
+            RefreshTimeSpan = WeChatConfigurationConstants.DefaultRefreshTimeSpan;
+        }
         /// <summary>
-        /// 小程序信息配置
+        /// 小程序信息配置构造函数
         /// </summary>
-        public WeChatClientOptions AppConfig { get; set; }
-        
+        public WeChatConfig WeChatConfig { get; set; }
+
         /// <summary>
-        /// Token刷新间隔 应低于120分钟
+        /// Token刷新间隔 应低于25分钟
         /// </summary>
-        public int RefreshTimeSpan { get; set; } = WeChatConfigurationConstants.DefaultRefreshTimeSpan;
+        public int RefreshTimeSpan { get; set; }
 
         /// <summary>
         /// 是否开启支付
@@ -29,7 +32,10 @@ namespace WeiXinBackEnd.SDK.Configuration
         /// </summary>
         public Func<HttpMessageInvoker> ClientFactory {get;set;}
 
-        public Type CacheType { get; private set; }= typeof(DefaultWeChatCache);
+        /// <summary>
+        ///  缓存类型
+        /// </summary>
+        public Type CacheType { get; set; }
 
         /// <summary>
         /// 验证AppConfig的必要性
@@ -39,17 +45,8 @@ namespace WeiXinBackEnd.SDK.Configuration
             var requiredType = RequiredType.App;
             if (UseTransaction)
                 requiredType = requiredType | RequiredType.Mch;
-            AppConfig.Assert(assertType: requiredType);
+            WeChatConfig.Assert(assertType: requiredType);
          
-        }
-
-        /// <summary>
-        /// 使用其他IWeChatCache实现
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void UseCache<T>() where T : IWeChatCache
-        {
-            CacheType = typeof(T);
         }
     }
 }

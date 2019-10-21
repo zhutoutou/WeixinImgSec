@@ -6,25 +6,41 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx;
 using WeiXinBackEnd.SDK.Configuration;
+using WeiXinBackEnd.SDK.Core.Async;
 using WeiXinBackEnd.SDK.Core.Cache;
 using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {
+    /// <summary>
+    /// ServiceCollection扩展
+    /// </summary>
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddWeChatCore(this IServiceCollection services,[NotNull]Action<WeChatConfiguration> options)
+        /// <summary>
+        /// 定义WeChat功能
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddWeChatCore(this IServiceCollection services,[NotNull]Action<WeChatOptions> options)
         {
             #region Construct Config
-            var config = new WeChatConfiguration();
+            var config = new WeChatOptions();
             options(config);
-            if (config.AppConfig == null)
-                throw new ArgumentNullException(nameof(config.AppConfig));
+            if (config.WeChatConfig == null)
+                throw new ArgumentNullException(nameof(config.WeChatConfig));
             config.AssertAppConfigIsValid();
-            services.AddSingleton(config);
             #endregion
 
+            services.AddTransient<WeChatAsyncEx>();
             services.AddWeChatCache(config);
+            services.AddSingleton(ioc=>
+            {
+                config.WeChatConfig.CacheManager = ioc.GetRequiredService<IWeChatCache>();
+                return config;
+            });
+
             services.AddWeChatHttpClient(config);
             services.AddTransient<IWeChatClient, WeChatClient>();
             services.AddHostedService<TokenAccessHostedService>();
@@ -36,7 +52,7 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="config"></param>
-        private static void AddWeChatCache(this IServiceCollection services, WeChatConfiguration config)
+        private static void AddWeChatCache(this IServiceCollection services, WeChatOptions config)
         {
             if (config.CacheType == typeof(DefaultWeChatCache))
             {
@@ -53,7 +69,7 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// <param name="services"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        private static void AddWeChatHttpClient(this IServiceCollection services, WeChatConfiguration config)
+        private static void AddWeChatHttpClient(this IServiceCollection services, WeChatOptions config)
         {
             var httpFunc = config.ClientFactory;
             if (httpFunc != null)

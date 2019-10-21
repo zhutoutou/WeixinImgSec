@@ -5,20 +5,26 @@ using Newtonsoft.Json;
 using WeiXinBackEnd.SDK.Client.Extensions;
 using WeiXinBackEnd.SDK.Client.Message.Base.Attributes;
 using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
+using WeiXinBackEnd.SDK.Core.Cache;
 
-namespace WeiXinBackEnd.SDK.Client
+namespace WeiXinBackEnd.SDK.Configuration
 {
-    public class WeChatClientOptions
+    public class WeChatConfig
     {
-        public static WeChatClientOptions GetOptionsFromConfig([NotNull]Microsoft.Extensions.Configuration.IConfiguration configuration,[NotNull]string schema)
+        /// <summary>
+        /// 采用属性注入
+        /// </summary>
+        internal IWeChatCache CacheManager { get; set; }
+
+        public static WeChatConfig GetOptionsFromConfig([NotNull]Microsoft.Extensions.Configuration.IConfiguration configuration,[NotNull]string schema)
         {
             var section = configuration.GetSection(schema);
             var configJson = section.ToJObject().ToString();
-            return JsonConvert.DeserializeObject<WeChatClientOptions>(configJson);
+            return JsonConvert.DeserializeObject<WeChatConfig>(configJson);
         }
 
 
-        public WeChatClientOptions([NotNull]string appId, [NotNull]string appSecret)
+        public WeChatConfig([NotNull]string appId, [NotNull]string appSecret)
         {
             AppId = appId;
             AppSecret = appSecret;
@@ -39,7 +45,7 @@ namespace WeiXinBackEnd.SDK.Client
         /// <summary>
         /// AccessToken
         /// </summary>
-        public string AccessToken { get; set; }
+        public string AccessToken => CacheManager.Get<WeChatCacheEntry<string>>(WeChatRefreshTokenConstants.AccessTokenCacheKey).Value;
 
         #region Mch Config
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WeiXinBackEnd.SDK.Configuration;
 
 namespace WeiXinBackEnd.SDK.Client.Message.ImgSec.Profile
 {
@@ -7,7 +8,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.ImgSec.Profile
         public ImgSecProfile()
         {
             CreateMap<WeChatImgSecInput, ImgSecRequest>(MemberList.None);
-            CreateMap<WeChatClientOptions, ImgSecRequest>(MemberList.None);
+            CreateMap<WeChatConfig, ImgSecRequest>(MemberList.None);
         }
     }
 }
