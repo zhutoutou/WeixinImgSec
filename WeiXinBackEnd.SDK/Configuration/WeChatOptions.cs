@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using WeiXinBackEnd.SDK.Client.Message.Base.Enum;
-using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Configuration
 {
@@ -9,8 +10,8 @@ namespace WeiXinBackEnd.SDK.Configuration
     {
         public WeChatOptions()
         {
-            CacheType = typeof(DefaultWeChatCache);
             RefreshTimeSpan = WeChatConfigurationConstants.DefaultRefreshTimeSpan;
+            UseCache = WeChatConstants.UseMSCache;
         }
         /// <summary>
         /// 小程序信息配置构造函数
@@ -30,12 +31,12 @@ namespace WeiXinBackEnd.SDK.Configuration
         /// <summary>
         /// 用于客户端的自定义
         /// </summary>
-        public Func<HttpMessageInvoker> ClientFactory {get;set;}
+        public Func<HttpMessageInvoker> ClientFactory { get; set; }
 
         /// <summary>
-        ///  缓存类型
+        ///  缓存注入(可替换)
         /// </summary>
-        public Type CacheType { get; set; }
+        public Action<IServiceCollection, IConfiguration, WeChatConfig> UseCache { get; set; }
 
         /// <summary>
         /// 验证AppConfig的必要性
@@ -46,7 +47,9 @@ namespace WeiXinBackEnd.SDK.Configuration
             if (UseTransaction)
                 requiredType = requiredType | RequiredType.Mch;
             WeChatConfig.Assert(assertType: requiredType);
-         
+
         }
+
+        
     }
 }

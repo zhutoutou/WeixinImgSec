@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
 
@@ -7,6 +9,13 @@ namespace WeiXinBackEnd.SDK.Core.Async
 {
     public static class AsyncHelper
     {
+        private static readonly ConcurrentDictionary<string, AsyncLock> MutexDictionary;
+
+        static AsyncHelper()
+        {
+            MutexDictionary = new ConcurrentDictionary<string, AsyncLock>();
+        }
+
         /// <summary>
         /// Checks if given method is an async method.
         /// </summary>
@@ -48,5 +57,22 @@ namespace WeiXinBackEnd.SDK.Core.Async
         {
             AsyncContext.Run(action);
         }
+
+        /// <summary>
+        /// 异步锁
+        /// </summary>
+        /// <param name="key">锁的标识</param>
+        /// <param name="operateFactory">具体加锁后的操作</param>
+        /// <param name="lockCancellationToken">等待锁的时间</param>
+        /// <returns></returns>
+        public static async Task GetLockAsync(string key, Func<Task> operateFactory, CancellationToken lockCancellationToken)
+        {
+            var mutex = MutexDictionary.GetOrAdd(key, k => new AsyncLock());
+            using (await mutex.LockAsync(lockCancellationToken))
+            {
+                await operateFactory().ConfigureAwait(false);
+            }
+        }
+
     }
 }

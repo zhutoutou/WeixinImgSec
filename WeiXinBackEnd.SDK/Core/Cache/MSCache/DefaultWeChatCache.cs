@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using WeiXinBackEnd.SDK.Core.Async;
 
 namespace WeiXinBackEnd.SDK.Core.Cache.MSCache
 {
@@ -24,41 +25,62 @@ namespace WeiXinBackEnd.SDK.Core.Cache.MSCache
             _logger = logger;
         }
 
-        public T Get<T>(string key) where T : class
+        public TResult Get<TResult>(string key) where TResult : class
         {
-            return _cache.Get<T>(key);
+            return _cache.Get<TResult>(key);
         }
 
-        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken) where T : class
+        public async Task<TResult> GetAsync<TResult>(string key, CancellationToken cancellationToken = default) where TResult : class
         {
-            return await Task.Run(() => _cache.Get<T>(key), cancellationToken).ConfigureAwait(false);
+            return await Task.Run(() => _cache.Get<TResult>(key), cancellationToken).ConfigureAwait(false);
         }
 
-        public bool Set<T>(string key, T value) where T : class
+        public bool Set<TResult>(string key, TResult value, DateTimeOffset? offset = null) where TResult : class
         {
             try
             {
-                _cache.Set(key, value);
+                if (offset.HasValue)
+                {
+                    _cache.Set(key, value, offset.Value);
+                }
+                else
+                {
+                    _cache.Set(key, value);
+                }
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DefaultWeChatCacheConstants.DefaultSetFailErrorMessage);
+                _logger.LogError(ex, string.Format(WeChatCacheConstants.DefaultSetFailErrorMessage, key));
                 return false;
             }
         }
 
-        public async Task<bool> SetAsync<T>(string key, T value, CancellationToken cancellationToken) where T : class
+        public async Task<bool> SetAsync<TResult>(string key, TResult value, DateTimeOffset? offset = null, CancellationToken cancellationToken = default) where TResult : class
         {
-            return await Task.Run(() => Set(key, value), cancellationToken).ConfigureAwait(false);
+            return await Task.Run(() => Set(key, value, offset), cancellationToken).ConfigureAwait(false);
         }
 
-        public T GetOrCreate<T>(string key, Func<T> createFactory) where T : class
+        public bool Remove(string key)
         {
-            return GetOrCreate(key, createFactory, null);
+            try
+            {
+                _cache.Remove(key);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, WeChatCacheConstants.DefaultSetFailErrorMessage);
+                return false;
+            }
         }
 
-        public T GetOrCreate<T>(string key, Func<T> createFactory, DateTimeOffset? offset) where T : class
+        public async Task<bool> RemoveAsync(string key, CancellationToken cancellationToken = default)
+        {
+            return await Task.Run(() => Remove(key), cancellationToken);
+        }
+
+        public TResult GetOrCreate<TResult>(string key, Func<TResult> createFactory, DateTimeOffset? offset = null) where TResult : class
         {
             return _cache.GetOrCreate(key, entry =>
             {
@@ -69,22 +91,25 @@ namespace WeiXinBackEnd.SDK.Core.Cache.MSCache
             });
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string key, Func<CancellationToken, Task<T>> createFactory, CancellationToken cancellationToken) where T : class
-        {
-            return await GetOrCreateAsync(key, createFactory, null, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<T> GetOrCreateAsync<T>(string key, Func<CancellationToken, Task<T>> createFactory, DateTimeOffset? offset, CancellationToken cancellationToken) where T : class
+        public async Task<TResult> GetOrCreateAsync<TResult>(string key, Func<Task<TResult>> createFactory, DateTimeOffset? offset = null, CancellationToken cancellationToken = default) where TResult : class
         {
             return await _cache.GetOrCreateAsync(key, async entry =>
              {
-                 var result = await createFactory(cancellationToken).ConfigureAwait(false);
+                 var result = await createFactory().ConfigureAwait(false);
                  if (offset.HasValue)
                      entry.SetAbsoluteExpiration(offset.Value);
                  return result;
              }).ConfigureAwait(false);
         }
 
-
+        public async Task LockAndOperateAsync(string key, Func<Task> operateFactory, TimeSpan lockTimeSpan = default)
+        {
+            if (lockTimeSpan == default)
+            {
+                lockTimeSpan = TimeSpan.FromMilliseconds(WeChatCacheConstants.DefaultLockTimeSpan);
+            }
+            var lockCancellationToken = new CancellationTokenSource(lockTimeSpan).Token;
+            await AsyncHelper.GetLockAsync(key, operateFactory, lockCancellationToken);
+        }
     }
 }

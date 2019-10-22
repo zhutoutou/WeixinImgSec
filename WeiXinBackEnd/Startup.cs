@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Namotion.Reflection;
 using WeiXinBackEnd.Application.ImgSec;
 using WeiXinBackEnd.Application.UserAccount;
 using WeiXinBackEnd.Core.Extension;
+using WeiXinBackEnd.SDK;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Extensions;
 using WeiXinBackEnd.SDK.Configuration;
@@ -50,11 +52,11 @@ namespace WeiXinBackEnd
                         .AllowCredentials()
                 ));
 
-            services.AddWeChatCore(options =>
+            services.AddWeChatCore(Configuration, options =>
             {
                 //options.WeChatConfigFunc = new WeChatConfig(Configuration["App:AppId"], Configuration["App:AppSecret"]);
-                options.WeChatConfig =WeChatConfig.GetOptionsFromConfig(Configuration, "WeChatPlateForm:MiniProgram");
-                options.CacheType = typeof(DefaultWeChatCache);
+                options.WeChatConfig = WeChatConfig.GetOptionsFromConfig(Configuration, "WeChatPlateForm:MiniProgram");
+                options.UseCache = WeChatConstants.UseMSCache;
                 options.RefreshTimeSpan = 1;
             });
 

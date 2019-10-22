@@ -22,7 +22,7 @@ namespace WeiXinBackEnd.SDK.Client.Message.Base.Enum
         /// 商户支持
         /// </summary>
         [Description("商户支持")]
-        Mch = 4
+        Mch = 4,
 
     }
 }

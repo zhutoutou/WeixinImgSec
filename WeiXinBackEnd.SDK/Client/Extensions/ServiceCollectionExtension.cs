@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net.Http;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nito.AsyncEx;
 using WeiXinBackEnd.SDK.Configuration;
-using WeiXinBackEnd.SDK.Core.Async;
 using WeiXinBackEnd.SDK.Core.Cache;
-using WeiXinBackEnd.SDK.Core.Cache.MSCache;
 
 namespace WeiXinBackEnd.SDK.Client.Extensions
 {
@@ -20,48 +16,39 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
         /// <summary>
         /// 定义WeChat功能
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="services">注入服务</param>
+        /// <param name="configuration">全局配置文件</param>
+        /// <param name="options">配置参数</param>
         /// <returns></returns>
-        public static IServiceCollection AddWeChatCore(this IServiceCollection services,[NotNull]Action<WeChatOptions> options)
+        public static IServiceCollection AddWeChatCore(this IServiceCollection services, [NotNull] IConfiguration configuration, [NotNull]Action<WeChatOptions> options)
         {
+            configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
             #region Construct Config
             var config = new WeChatOptions();
             options(config);
-            if (config.WeChatConfig == null)
-                throw new ArgumentNullException(nameof(config.WeChatConfig));
             config.AssertAppConfigIsValid();
             #endregion
 
-            services.AddTransient<WeChatAsyncEx>();
-            services.AddWeChatCache(config);
-            services.AddSingleton(ioc=>
-            {
-                config.WeChatConfig.CacheManager = ioc.GetRequiredService<IWeChatCache>();
-                return config;
-            });
-
+            services.AddWeChatCache(configuration, config);
             services.AddWeChatHttpClient(config);
             services.AddTransient<IWeChatClient, WeChatClient>();
             services.AddHostedService<TokenAccessHostedService>();
             return services;
         }
 
-        /// <summary>
-        /// 定义WeChat缓存
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        private static void AddWeChatCache(this IServiceCollection services, WeChatOptions config)
+        private static void AddWeChatCache(this IServiceCollection services, IConfiguration configuration, WeChatOptions config)
         {
-            if (config.CacheType == typeof(DefaultWeChatCache))
+            config.UseCache(services, configuration, config.WeChatConfig);
+            services.AddSingleton(ioc =>
             {
-                services.AddSingleton(new MemoryCache(new MemoryCacheOptions()));
-                services.AddSingleton(new ConcurrentDictionary<string, AsyncLock>());
-            }
-       
-            services.AddTransient(typeof(IWeChatCache),config.CacheType);
+                config.WeChatConfig.CacheManager = ioc.GetRequiredService<IWeChatCache>();
+                return config;
+            });
         }
+
+
 
         /// <summary>
         /// 定义HttpMessageInvoker
@@ -74,19 +61,19 @@ namespace WeiXinBackEnd.SDK.Client.Extensions
             var httpFunc = config.ClientFactory;
             if (httpFunc != null)
             {
-                services.AddTransient(ioc=>httpFunc);
+                services.AddTransient(ioc => httpFunc);
             }
             else
             {
                 services.AddHttpClient();
-                services.AddTransient<Func<HttpMessageInvoker>>(ioc => {
+                services.AddTransient<Func<HttpMessageInvoker>>(ioc =>
+                {
                     return () =>
                     {
                         var factory = ioc.GetService<IHttpClientFactory>();
                         return factory.CreateClient();
                     };
                 });
-
             }
         }
     }

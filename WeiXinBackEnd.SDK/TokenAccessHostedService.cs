@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using WeiXinBackEnd.SDK.Client;
 using WeiXinBackEnd.SDK.Client.Message.RefreshToken;
 using WeiXinBackEnd.SDK.Configuration;
-using WeiXinBackEnd.SDK.Core.Async;
 using WeiXinBackEnd.SDK.Core.Cache;
 
 namespace WeiXinBackEnd.SDK
@@ -22,7 +21,6 @@ namespace WeiXinBackEnd.SDK
         private readonly IWeChatClient _weChatClient;
         private readonly WeChatOptions _config;
         private readonly IWeChatCache _cacheManager;
-        private readonly WeChatAsyncEx _asyncEx;
         private readonly int _expireTime;
         private readonly int _allowRefreshTimeOffset;
 
@@ -33,19 +31,16 @@ namespace WeiXinBackEnd.SDK
         /// <param name="weChatClient"></param>
         /// <param name="config"></param>
         /// <param name="cache"></param>
-        /// <param name="asyncEx"></param>
         public TokenAccessHostedService(
             ILogger<TokenAccessHostedService> logger,
             IWeChatClient weChatClient,
             WeChatOptions config,
-            IWeChatCache cache,
-            WeChatAsyncEx asyncEx)
+            IWeChatCache cache)
         {
             _logger = logger;
             _weChatClient = weChatClient;
             _config = config;
             _cacheManager = cache;
-            _asyncEx = asyncEx;
 
             // 过期策略 1/4过期生效，1/5刷新间隔 刷新必定命中过期片段
             _expireTime = _config.RefreshTimeSpan * 60 * 5;
@@ -69,13 +64,13 @@ namespace WeiXinBackEnd.SDK
         private async void DoWork(object state)
         {
             _logger.LogInformation("TokenAccess Background Service is working.");
+            var cacheKey = WeChatCacheConstants.GetCacheKey(WeChatRefreshTokenConstants.AccessTokenKey);
+            var lockKey = WeChatCacheConstants.GetLockKey(WeChatRefreshTokenConstants.AccessTokenKey);
 
-            CancellationToken lockToken = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
-            await _asyncEx.GetLockAsync(WeChatRefreshTokenConstants.AccessTokenCacheKey, async () =>
+            await _cacheManager.LockAndOperateAsync(lockKey, async () =>
             {
-                CancellationToken cacheToken = new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token;
                 var entry = await _cacheManager.GetAsync<WeChatCacheEntry<string>>(
-                    WeChatRefreshTokenConstants.AccessTokenCacheKey, cacheToken);
+                    cacheKey);
                 if (entry == null || (entry.GetExpireOffset?.TotalSeconds ?? 0) < _allowRefreshTimeOffset)
                 {
                     var result = await _weChatClient.RequestRefreshTokenAsync(new WeChatRefreshTokenInput(), new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token).ConfigureAwait(false);
@@ -85,11 +80,12 @@ namespace WeiXinBackEnd.SDK
                     }
                     else
                     {
-                        await _cacheManager.SetAsync(WeChatRefreshTokenConstants.AccessTokenCacheKey, new WeChatCacheEntry<string>
+                        var expireTime = DateTime.Now.Add(TimeSpan.FromSeconds(_expireTime));
+                        await _cacheManager.SetAsync(cacheKey, new WeChatCacheEntry<string>
                         {
                             Value = result.Result.AccessToken,
-                            ExpireTime = DateTime.Now.Add(TimeSpan.FromSeconds(_expireTime)),
-                        }, cacheToken);
+                            ExpireTime = expireTime
+                        }, expireTime);
                         _logger.LogInformation(WeChatRefreshTokenConstants.RefreshAccessTokenCacheSuccess);
                     }
                 }
@@ -98,7 +94,7 @@ namespace WeiXinBackEnd.SDK
                     _logger.LogInformation(WeChatRefreshTokenConstants.RefreshAccessTokenCacheCancel);
                 }
 
-            }, lockToken);
+            }, TimeSpan.FromSeconds(5));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
